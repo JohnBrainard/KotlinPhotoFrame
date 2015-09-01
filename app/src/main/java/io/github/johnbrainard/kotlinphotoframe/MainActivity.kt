@@ -1,18 +1,65 @@
 package io.github.johnbrainard.kotlinphotoframe
 
-import android.support.v7.app.AppCompatActivity
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.activity_main.imageView
+import kotlin.concurrent.thread
 
 public class MainActivity : AppCompatActivity() {
+
+	var images: ImageSource? = null
+
+	val handler = Handler()
+	val callback = Runnable { selectNextImage() }
+
+	var currentDrawable:Drawable? = null
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
+	}
 
-		val imageView = this.imageView
+	override fun onResume() {
+		super.onResume()
+
+		val imageNames = getResources().getStringArray(R.array.images)
+		images = ImageSource(imageNames)
+
+		selectNextImage()
+	}
+
+	override fun onPause() {
+		super.onPause()
+		handler.removeCallbacks(callback)
+	}
+
+	fun selectNextImage() {
+		if (images == null)
+			return
+
+		val imageName = images!!.nextImage()
+
+		thread(name="image-loader") {
+			val drawable = Drawable.createFromStream(getAssets().open(imageName), imageName)
+
+			runOnUiThread {
+				if (currentDrawable != null) {
+					val transition = TransitionDrawable(arrayOf(currentDrawable, drawable))
+					imageView.setImageDrawable(transition)
+					transition.startTransition(250)
+				} else {
+					imageView.setImageDrawable(drawable)
+				}
+
+				currentDrawable = drawable
+				handler.postDelayed(callback, 10000)
+			}
+		}
 	}
 
 	override fun onCreateOptionsMenu(menu: Menu): Boolean {
