@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="images">
+		<!-- http://www.publicdomainpictures.net/view-image.php?image=16456&picture=dark-blue-sky -->
+		<item>dark_blue_sky.jpg</item>
+
+		<!-- http://www.publicdomainpictures.net/view-image.php?image=1651&picture=morning-sun&large=1 -->
+		<item>morning_sun.jpg</item>
+
+		<!-- http://www.publicdomainpictures.net/view-image.php?image=16457&picture=orange-sky&large=1 -->
+		<item>orange_sky.jpg</item>
+
+		<!-- http://www.publicdomainpictures.net/view-image.php?image=8408&picture=pamukkale-travertine -->
+		<item>pamukkale_travertine.jpg</item>
+
+		<!-- http://www.publicdomainpictures.net/view-image.php?image=25509&picture=september-in-the-forest -->
+		<item>september_in_the_forest.jpg</item>
+	</string-array>
+</resources>
