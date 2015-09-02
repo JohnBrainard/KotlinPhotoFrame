@@ -1,5 +1,7 @@
 package io.github.johnbrainard.kotlinphotoframe
 
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.TransitionDrawable
 import android.os.Bundle
@@ -7,6 +9,7 @@ import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.WindowManager
 import kotlinx.android.synthetic.activity_main.imageView
 import kotlin.concurrent.thread
 
@@ -18,6 +21,10 @@ public class MainActivity : AppCompatActivity() {
 	val callback = Runnable { selectNextImage() }
 
 	var currentDrawable:Drawable? = null
+
+	private val powerReceiver = PowerConnectionReceiver() {
+		getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+	}
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
@@ -31,11 +38,17 @@ public class MainActivity : AppCompatActivity() {
 		images = ImageSource(imageNames)
 
 		selectNextImage()
+
+		registerReceiver(powerReceiver, IntentFilter(Intent.ACTION_POWER_DISCONNECTED))
+
+		if (isPowerConnected)
+			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 	}
 
 	override fun onPause() {
 		super.onPause()
 		handler.removeCallbacks(callback)
+		unregisterReceiver(powerReceiver)
 	}
 
 	fun selectNextImage() {
